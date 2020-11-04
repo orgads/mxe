@@ -163,7 +163,7 @@ MXE_GCC_THREADS = \
 
 # allowed exception handling for targets
 # default (first item) and alternate, revisit if gcc/mingw-w64 change defaults
-i686-w64-mingw32_EH   := sjlj dw2
+i686-w64-mingw32_EH   := dw2 sjlj
 x86_64-w64-mingw32_EH := seh sjlj
 
 # functions to determine exception handling from user-specified target
