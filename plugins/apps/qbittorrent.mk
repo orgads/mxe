@@ -2,14 +2,14 @@
 
 PKG             := qbittorrent
 $(PKG)_IGNORE   :=
-$(PKG)_VERSION  := 3.3.4
-$(PKG)_CHECKSUM := c0d0d4b72c240f113b59a061146803bc1b7926d3d7f39b06b50a4d26f5ad91b8
+$(PKG)_VERSION  := 5.1.2
+$(PKG)_CHECKSUM := d5806092c71959a5dbdf55c645ea45ed48a70369ab6c226039b83f1ade6979f2
 $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
 $(PKG)_FILE     := $(PKG)-$($(PKG)_VERSION).tar.xz
 $(PKG)_URL      := https://$(SOURCEFORGE_MIRROR)/project/$(PKG)/$(PKG)/$(PKG)-$($(PKG)_VERSION)/$($(PKG)_FILE)
 $(PKG)_WEBSITE  := https://qbittorrent.org/
 $(PKG)_OWNER    := https://github.com/starius
-$(PKG)_DEPS     := cc boost libtorrent-rasterbar qt $(BUILD)~geoip-database
+$(PKG)_DEPS     := cc boost libtorrent-rasterbar qt6-qtbase qt6-qtsvg qt6-qttools openssl $(BUILD)~geoip-database
 
 define $(PKG)_UPDATE
     $(WGET) -q -O- 'https://www.qbittorrent.org/download.php' | \
@@ -17,15 +17,13 @@ define $(PKG)_UPDATE
     head -1
 endef
 
+#        --with-boost='$(PREFIX)/$(TARGET)'
 define $(PKG)_BUILD
-    cd '$(1)' && \
-        QMAKE_LRELEASE='$(PREFIX)/$(TARGET)/qt/bin/lrelease' \
-        ./configure \
-        $(MXE_CONFIGURE_OPTS) \
-        --with-qt4=yes \
-        --with-boost='$(PREFIX)/$(TARGET)'
-    $(MAKE) -C '$(1)' -j '$(JOBS)'
-    cp '$(1)'/src/release/qbittorrent.exe '$(PREFIX)/$(TARGET)/bin/'
+    cd '$(BUILD_DIR)' && $(TARGET)-cmake \
+        -DQT_SKIP_AUTO_PLUGIN_INCLUSION=ON \
+        '$(SOURCE_DIR)'
+    '$(TARGET)-cmake' --build '$(BUILD_DIR)' -j '$(JOBS)'
+    '$(TARGET)-cmake' --install '$(BUILD_DIR)'
 endef
 
 $(PKG)_BUILD_SHARED =
